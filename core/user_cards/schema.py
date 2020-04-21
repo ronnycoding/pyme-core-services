@@ -11,6 +11,7 @@ from .models import UserCard
 class UserCardObjectType(DjangoObjectType):
     class Meta:
         model = UserCard
+        fields = ('last_four_digits', 'payment_method_id', 'brand',)
 
 
 class CreateCard(graphene.Mutation):
@@ -68,7 +69,8 @@ class CreateCard(graphene.Mutation):
             exp_month=exp_month,
             exp_year=exp_year,
             cvc=cvc,
-            last_four_digits=number[-4:],
+            last_four_digits=payment_method.get('card').get('last4'),
+            brand=payment_method.get('card').get('brand'),
             payment_method_id=payment_method.get('id'),
             user=user,
         )
