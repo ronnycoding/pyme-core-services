@@ -1,0 +1,7 @@
+!wordpress/
+wordpress/*
+wordpress/wp-content/uploads/sites/*
+!wordpress/wp-content
+!wordpress/Dockerfile
+!wordpress/wp-config.php
+!wordpress/.htaccess

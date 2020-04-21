@@ -1,0 +1,12 @@
+.react-tel-input .form-control+div:before {
+  display: none !important;
+}
+
+.react-tel-input .form-control:focus {
+  border-color: #3f51b5;
+  box-shadow: 0 0 0 1px #3f51b5;
+}
+
+div#authenticationMethod {
+  opacity: 0.5;
+}

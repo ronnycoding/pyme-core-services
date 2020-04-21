@@ -1,0 +1,469 @@
+- args:
+    allowlist: []
+    functions: []
+    query_collections: []
+    remote_schemas: []
+    tables:
+    - array_relationships:
+      - comment: null
+        name: delivery_statuses
+        using:
+          foreign_key_constraint_on:
+            column: delivery_id
+            table: delivery_status
+      computed_fields: []
+      configuration:
+        custom_column_names: {}
+        custom_root_fields:
+          delete: null
+          insert: null
+          select: null
+          select_aggregate: null
+          select_by_pk: null
+          update: null
+      delete_permissions: []
+      event_triggers: []
+      insert_permissions: []
+      is_enum: false
+      object_relationships:
+      - comment: null
+        name: delivery_status
+        using:
+          foreign_key_constraint_on: delivery_status_id
+      - comment: null
+        name: user
+        using:
+          foreign_key_constraint_on: user_id
+      select_permissions: []
+      table: deliveries
+      update_permissions: []
+    - array_relationships: []
+      computed_fields: []
+      configuration:
+        custom_column_names: {}
+        custom_root_fields:
+          delete: null
+          insert: null
+          select: null
+          select_aggregate: null
+          select_by_pk: null
+          update: null
+      delete_permissions: []
+      event_triggers: []
+      insert_permissions: []
+      is_enum: false
+      object_relationships:
+      - comment: null
+        name: delivery
+        using:
+          foreign_key_constraint_on: delivery_id
+      - comment: null
+        name: delivery_status
+        using:
+          foreign_key_constraint_on: delivery_status_id
+      - comment: null
+        name: location
+        using:
+          foreign_key_constraint_on: location_id
+      select_permissions: []
+      table: delivery_status
+      update_permissions: []
+    - array_relationships:
+      - comment: null
+        name: deliveries
+        using:
+          foreign_key_constraint_on:
+            column: delivery_status_id
+            table: deliveries
+      - comment: null
+        name: delivery_statuses
+        using:
+          foreign_key_constraint_on:
+            column: delivery_status_id
+            table: delivery_status
+      computed_fields: []
+      configuration:
+        custom_column_names: {}
+        custom_root_fields:
+          delete: null
+          insert: null
+          select: null
+          select_aggregate: null
+          select_by_pk: null
+          update: null
+      delete_permissions: []
+      event_triggers: []
+      insert_permissions: []
+      is_enum: false
+      object_relationships: []
+      select_permissions: []
+      table: delivery_statuses
+      update_permissions: []
+    - array_relationships: []
+      computed_fields: []
+      configuration:
+        custom_column_names: {}
+        custom_root_fields:
+          delete: null
+          insert: null
+          select: null
+          select_aggregate: null
+          select_by_pk: null
+          update: null
+      delete_permissions: []
+      event_triggers: []
+      insert_permissions: []
+      is_enum: false
+      object_relationships: []
+      select_permissions: []
+      table: fees
+      update_permissions: []
+    - array_relationships:
+      - comment: null
+        name: delivery_statuses
+        using:
+          foreign_key_constraint_on:
+            column: location_id
+            table: delivery_status
+      - comment: null
+        name: stores
+        using:
+          foreign_key_constraint_on:
+            column: location_id
+            table: stores
+      computed_fields: []
+      configuration:
+        custom_column_names: {}
+        custom_root_fields:
+          delete: null
+          insert: null
+          select: null
+          select_aggregate: null
+          select_by_pk: null
+          update: null
+      delete_permissions: []
+      event_triggers: []
+      insert_permissions: []
+      is_enum: false
+      object_relationships: []
+      select_permissions: []
+      table: locations
+      update_permissions: []
+    - array_relationships: []
+      computed_fields: []
+      configuration:
+        custom_column_names: {}
+        custom_root_fields:
+          delete: null
+          insert: null
+          select: null
+          select_aggregate: null
+          select_by_pk: null
+          update: null
+      delete_permissions: []
+      event_triggers: []
+      insert_permissions: []
+      is_enum: false
+      object_relationships:
+      - comment: null
+        name: user
+        using:
+          manual_configuration:
+            column_mapping:
+              id: id
+            remote_table: users
+      select_permissions:
+      - comment: null
+        permission:
+          allow_aggregations: false
+          columns:
+          - id
+          - last_seen
+          computed_fields: []
+          filter: {}
+        role: user
+      table: online_users
+      update_permissions: []
+    - array_relationships: []
+      computed_fields: []
+      configuration:
+        custom_column_names: {}
+        custom_root_fields:
+          delete: null
+          insert: null
+          select: null
+          select_aggregate: null
+          select_by_pk: null
+          update: null
+      delete_permissions: []
+      event_triggers: []
+      insert_permissions: []
+      is_enum: false
+      object_relationships:
+      - comment: null
+        name: order
+        using:
+          foreign_key_constraint_on: order_id
+      - comment: null
+        name: product
+        using:
+          foreign_key_constraint_on: product_id
+      select_permissions: []
+      table: order_products
+      update_permissions: []
+    - array_relationships:
+      - comment: null
+        name: order_products
+        using:
+          foreign_key_constraint_on:
+            column: order_id
+            table: order_products
+      - comment: null
+        name: order_statuses
+        using:
+          foreign_key_constraint_on:
+            column: order_id
+            table: order_status
+      computed_fields: []
+      configuration:
+        custom_column_names: {}
+        custom_root_fields:
+          delete: null
+          insert: null
+          select: null
+          select_aggregate: null
+          select_by_pk: null
+          update: null
+      delete_permissions: []
+      event_triggers: []
+      insert_permissions: []
+      is_enum: false
+      object_relationships:
+      - comment: null
+        name: store
+        using:
+          foreign_key_constraint_on: store_id
+      - comment: null
+        name: user
+        using:
+          foreign_key_constraint_on: user_id
+      select_permissions: []
+      table: orders
+      update_permissions: []
+    - array_relationships: []
+      computed_fields: []
+      configuration:
+        custom_column_names: {}
+        custom_root_fields:
+          delete: null
+          insert: null
+          select: null
+          select_aggregate: null
+          select_by_pk: null
+          update: null
+      delete_permissions: []
+      event_triggers: []
+      insert_permissions: []
+      is_enum: false
+      object_relationships:
+      - comment: null
+        name: order
+        using:
+          foreign_key_constraint_on: order_id
+      - comment: null
+        name: order_status
+        using:
+          foreign_key_constraint_on: status_id
+      select_permissions: []
+      table: order_status
+      update_permissions: []
+    - array_relationships:
+      - comment: null
+        name: order_statuses
+        using:
+          foreign_key_constraint_on:
+            column: status_id
+            table: order_status
+      computed_fields: []
+      configuration:
+        custom_column_names: {}
+        custom_root_fields:
+          delete: null
+          insert: null
+          select: null
+          select_aggregate: null
+          select_by_pk: null
+          update: null
+      delete_permissions: []
+      event_triggers: []
+      insert_permissions: []
+      is_enum: false
+      object_relationships: []
+      select_permissions: []
+      table: order_statuses
+      update_permissions: []
+    - array_relationships:
+      - comment: null
+        name: products
+        using:
+          foreign_key_constraint_on:
+            column: product_category_id
+            table: products
+      computed_fields: []
+      configuration:
+        custom_column_names: {}
+        custom_root_fields:
+          delete: null
+          insert: null
+          select: null
+          select_aggregate: null
+          select_by_pk: null
+          update: null
+      delete_permissions: []
+      event_triggers: []
+      insert_permissions: []
+      is_enum: false
+      object_relationships: []
+      select_permissions: []
+      table: product_categories
+      update_permissions: []
+    - array_relationships:
+      - comment: null
+        name: order_products
+        using:
+          foreign_key_constraint_on:
+            column: product_id
+            table: order_products
+      computed_fields: []
+      configuration:
+        custom_column_names: {}
+        custom_root_fields:
+          delete: null
+          insert: null
+          select: null
+          select_aggregate: null
+          select_by_pk: null
+          update: null
+      delete_permissions: []
+      event_triggers: []
+      insert_permissions: []
+      is_enum: false
+      object_relationships:
+      - comment: null
+        name: product_category
+        using:
+          foreign_key_constraint_on: product_category_id
+      - comment: null
+        name: store
+        using:
+          foreign_key_constraint_on: store_id
+      select_permissions: []
+      table: products
+      update_permissions: []
+    - array_relationships:
+      - comment: null
+        name: stores
+        using:
+          foreign_key_constraint_on:
+            column: store_category_id
+            table: stores
+      computed_fields: []
+      configuration:
+        custom_column_names: {}
+        custom_root_fields:
+          delete: null
+          insert: null
+          select: null
+          select_aggregate: null
+          select_by_pk: null
+          update: null
+      delete_permissions: []
+      event_triggers: []
+      insert_permissions: []
+      is_enum: false
+      object_relationships: []
+      select_permissions: []
+      table: store_categories
+      update_permissions: []
+    - array_relationships:
+      - comment: null
+        name: orders
+        using:
+          foreign_key_constraint_on:
+            column: store_id
+            table: orders
+      - comment: null
+        name: products
+        using:
+          foreign_key_constraint_on:
+            column: store_id
+            table: products
+      computed_fields: []
+      configuration:
+        custom_column_names: {}
+        custom_root_fields:
+          delete: null
+          insert: null
+          select: null
+          select_aggregate: null
+          select_by_pk: null
+          update: null
+      delete_permissions: []
+      event_triggers: []
+      insert_permissions: []
+      is_enum: false
+      object_relationships:
+      - comment: null
+        name: location
+        using:
+          foreign_key_constraint_on: location_id
+      - comment: null
+        name: store_category
+        using:
+          foreign_key_constraint_on: store_category_id
+      - comment: null
+        name: user
+        using:
+          foreign_key_constraint_on: user_id
+      select_permissions: []
+      table: stores
+      update_permissions: []
+    - array_relationships:
+      - comment: null
+        name: deliveries
+        using:
+          foreign_key_constraint_on:
+            column: user_id
+            table: deliveries
+      - comment: null
+        name: orders
+        using:
+          foreign_key_constraint_on:
+            column: user_id
+            table: orders
+      - comment: null
+        name: stores
+        using:
+          foreign_key_constraint_on:
+            column: user_id
+            table: stores
+      computed_fields: []
+      configuration:
+        custom_column_names: {}
+        custom_root_fields:
+          delete: null
+          insert: null
+          select: null
+          select_aggregate: null
+          select_by_pk: null
+          update: null
+      delete_permissions: []
+      event_triggers: []
+      insert_permissions: []
+      is_enum: false
+      object_relationships: []
+      select_permissions: []
+      table: users
+      update_permissions: []
+    version: 2
+  type: replace_metadata

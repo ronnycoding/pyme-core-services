@@ -1,0 +1,14 @@
+{
+  "extends": "./node_modules/@blockmatic/tsconfig/tsconfig.app.json",
+  "compilerOptions": {
+    "baseUrl": "./src",
+    "rootDirs": ["./src"],
+    "jsx": "react",
+    "skipLibCheck": true,
+    "lib": ["es6", "dom"],
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "strictNullChecks": true,
+  },
+  "include": ["./src"]
+}

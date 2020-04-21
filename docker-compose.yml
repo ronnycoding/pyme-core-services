@@ -1,0 +1,219 @@
+version: '3.7'
+
+services:
+  reverse_proxy:
+    image: traefik:v2.1
+    container_name: proxy
+    ports:
+      # The HTTP port
+      - '80:80'
+      # The HTTPS port
+      - '443:443'
+      # The Web UI (enabled by --api.insecure=true)
+      - '8080:8080'
+      # Xdebug
+      - '9001:9000'
+    hostname: 'traefik'
+    volumes:
+      # So that Traefik can listen to the Docker events
+      - '/var/run/docker.sock:/var/run/docker.sock:ro'
+      - './traefik.yml:/traefik.yml:ro'
+    restart: unless-stopped
+
+  core_database:
+    image: postgres
+    container_name: core_database
+    depends_on:
+      - reverse_proxy
+    environment:
+      POSTGRES_PASSWORD: $DB_PASSWORD
+      POSTGRES_USER: $DB_USER
+      # POSTGRES_DB: $DB_DATABASE
+      POSTGRES_HOST_AUTH_METHOD: trust
+      POSTGRES_MULTIPLE_DATABASES: ${DB_DATABASE},${DB_DATABASE_HASURA}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    restart: unless-stopped
+    labels:
+      - 'traefik.enable=false'
+
+  api:
+    container_name: api
+    build:
+      context: ./core
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./core:/code
+    expose:
+      - 8000
+    ports:
+      - 8087:8000
+    depends_on:
+        - reverse_proxy
+        - core_database
+    labels:
+      # Explicitly tell Traefik to expose this container.
+      - 'traefik.enable=true'
+      # The domain the service will respond to.
+      - 'traefik.http.routers.api.rule=Host(`api.$MY_DOMAIN`)'
+      # Allow request only from the predefined entry point named 'websecure'
+      - 'traefik.http.routers.api.entrypoints=web'
+      # Define certificate generation based on routers Host & HostSNI rules.
+      # - 'traefik.http.routers.api.tls.certresolver=letsEncrypt'
+      # Tell Traefik to use the port 80 to connect to `api`
+      - 'traefik.http.services.api.loadbalancer.server.port=8000'
+      # - 'traefik.http.routers.redirect-https.rule=hostregexp(`{host:api.$MY_DOMAIN}`)'
+      # - 'traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https'
+      # - 'traefik.http.routers.redirect-https.middlewares=redirect-to-https'
+    restart: unless-stopped
+    environment:
+      DB_PASSWORD: $DB_PASSWORD
+      DB_USER: $DB_USER
+      DB_DATABASE: $DB_DATABASE
+      DB_HOST: $DB_HOST
+      DB_PORT: $DB_PORT
+      SECRET_KEY: $SECRET_KEY
+      ALLOWED_HOST: $ALLOWED_HOST
+      HASURA_GRAPHQL_ADMIN_SECRET: $HASURA_GRAPHQL_ADMIN_SECRET
+      HASURA_GRAPHQL_ENDPOINT: $HASURA_GRAPHQL_ENDPOINT
+      NETWORK_HOST: $NETWORK_HOST
+      ANONYMOUS_USER_EMAIL: $ANONYMOUS_USER_EMAIL
+      STRIPE_PUBLISHABLE_KEY: $STRIPE_PUBLISHABLE_KEY
+      STRIPE_SECRET_KEY: $STRIPE_SECRET_KEY
+
+  # web:
+  #   container_name: web
+  #   build:
+  #     context: ./webapp
+  #   depends_on:
+  #     - reverse_proxy
+  #   labels:
+  #     # Explicitly tell Traefik to expose this container.
+  #     - 'traefik.enable=true'
+  #     # The domain the service will respond to.
+  #     - 'traefik.http.routers.web.rule=Host(`web.$MY_DOMAIN`)'
+  #     # Allow request only from the predefined entry point named 'websecure'
+  #     - 'traefik.http.routers.web.entrypoints=websecure'
+  #     # Define certificate generation based on routers Host & HostSNI rules.
+  #     - 'traefik.http.routers.web.tls.certresolver=letsEncrypt'
+  #     # Tell Traefik to use the port 80 to connect to `api`
+  #     - 'traefik.http.services.web.loadbalancer.server.port=3000'
+  #     - 'traefik.http.routers.redirect-https.rule=hostregexp(`{host:web.$MY_DOMAIN}`)'
+  #     - 'traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https'
+  #     - 'traefik.http.routers.redirect-https.middlewares=redirect-to-https'
+  #   volumes:
+  #     - './webapp:/usr/src/app'
+  #     - '/usr/src/app/node_modules'
+  #   environment:
+  #     - NODE_ENV=development
+  
+  smtp-server:
+    container_name: smtp-server
+    image: mailhog/mailhog
+    depends_on:
+      - reverse_proxy
+    expose:
+      - 1025
+      - 8025
+    labels:
+      # Explicitly tell Traefik to expose this container.
+      - 'traefik.enable=true'
+      # The domain the service will respond to.
+      - 'traefik.http.routers.smtp.rule=Host(`mailhog.$MY_DOMAIN`)'
+      # Allow request only from the predefined entry point named 'websecure'
+      - 'traefik.http.routers.smtp.entrypoints=web'
+      # Define certificate generation based on routers Host & HostSNI rules.
+      # - 'traefik.http.routers.api.tls.certresolver=letsEncrypt'
+      # Tell Traefik to use the port 80 to connect to `api`
+      - 'traefik.http.services.smtp.loadbalancer.server.port=8025'
+      # - 'traefik.http.routers.redirect-https.rule=hostregexp(`{mailhog:api.$MY_DOMAIN}`)'
+      # - 'traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https'
+      # - 'traefik.http.routers.redirect-https.middlewares=redirect-to-https'
+    restart: unless-stopped
+  
+  adminer:
+    container_name: adminer
+    image: adminer
+    depends_on:
+      - reverse_proxy
+    labels:
+      # Explicitly tell Traefik to expose this container.
+      - 'traefik.enable=true'
+      # The domain the service will respond to.
+      - 'traefik.http.routers.adminer.rule=Host(`adminer.$MY_DOMAIN`)'
+      # Allow request only from the predefined entry point named 'websecure'
+      - 'traefik.http.routers.adminer.entrypoints=web'
+      # Define certificate generation based on routers Host & HostSNI rules.
+      # - 'traefik.http.routers.api.tls.certresolver=letsEncrypt'
+      # Tell Traefik to use the port 80 to connect to `api`
+      - 'traefik.http.services.adminer.loadbalancer.server.port=8080'
+      # - 'traefik.http.routers.redirect-https.rule=hostregexp(`{mailhog:api.$MY_DOMAIN}`)'
+      # - 'traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https'
+      # - 'traefik.http.routers.redirect-https.middlewares=redirect-to-https'
+    restart: always
+
+  # elasticsearch:
+  #   image: docker.elastic.co/elasticsearch/elasticsearch:7.3.1
+  #   container_name: elastic_search
+  #   environment:
+  #     - discovery.type=single-node
+  #   labels:
+  #     - 'traefik.enable=false'
+  #   restart: always
+
+  # kibana:
+  #   image: docker.elastic.co/kibana/kibana:7.3.1
+  #   container_name: kibana
+  #   depends_on:
+  #     - reverse_proxy
+  #   labels:
+  #     # Explicitly tell Traefik to expose this container.
+  #     - 'traefik.enable=true'
+  #     # The domain the service will respond to.
+  #     - 'traefik.http.routers.kibana.rule=Host(`kibana.$MY_DOMAIN`)'
+  #     # Allow request only from the predefined entry point named 'websecure'
+  #     - 'traefik.http.routers.kibana.entrypoints=web'
+  #     # Define certificate generation based on routers Host & HostSNI rules.
+  #     # - 'traefik.http.routers.api.tls.certresolver=letsEncrypt'
+  #     # Tell Traefik to use the port 80 to connect to `api`
+  #     - 'traefik.http.services.kibana.loadbalancer.server.port=5601'
+  #     # - 'traefik.http.routers.redirect-https.rule=hostregexp(`{mailhog:api.$MY_DOMAIN}`)'
+  #     # - 'traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https'
+  #     # - 'traefik.http.routers.redirect-https.middlewares=redirect-to-https'
+  #   restart: always
+  
+  graphql-engine:
+    image: hasura/graphql-engine:v1.0.0-rc.1.cli-migrations
+    container_name: hasura
+    ports:
+      - 8086:8080
+    labels:
+      # Explicitly tell Traefik to expose this container.
+      - 'traefik.enable=true'
+      # The domain the service will respond to.
+      - 'traefik.http.routers.hasura.rule=Host(`hasura.$MY_DOMAIN`)'
+      # Allow request only from the predefined entry point named 'websecure'
+      - 'traefik.http.routers.hasura.entrypoints=web'
+      # Define certificate generation based on routers Host & HostSNI rules.
+      # - 'traefik.http.routers.api.tls.certresolver=letsEncrypt'
+      # Tell Traefik to use the port 80 to connect to `api`
+      - 'traefik.http.services.hasura.loadbalancer.server.port=8080'
+      # - 'traefik.http.routers.redirect-https.rule=hostregexp(`{mailhog:api.$MY_DOMAIN}`)'
+      # - 'traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https'
+      # - 'traefik.http.routers.redirect-https.middlewares=redirect-to-https'
+    environment:
+      CORE_GRAPHQL_ENDPOINT: $CORE_GRAPHQL_ENDPOINT
+      HASURA_GRAPHQL_DATABASE_URL: postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_DATABASE_HASURA}
+      HASURA_GRAPHQL_JWT_SECRET: '{"type":"HS256", "key": "Cm+ivXX5cyyO70VJMjqStZu1eeiZ68oYJ2acdZGp59h4whikMnQ4JcGRqkH5X1i3yvyxYuVb1+siHNtO1mTBbhrMhM0qSJ+9K2ff4zSPWTGHVK7sLcCLA5KVv4ccEwOJZ0EbE6EQn1eTe3flxIqOWu3lk4nRd5Txs89oD2x2ZFsLHOYQ+rjYsEkJidpSgaivgJJcQt/C2Uue7BoAm16dtRRHIPcId0ikItqeKGlIcM9ENpSlBTgt1GVF3I6FumpQgnva26SFyPXx88hr70ogQZ+zATk4WM4bLcX9B1dv1ZCTIC8sjyr6u3tQB9V8x049jFcv2y25enNoLIdZVEyYhQ=="}'
+      HASURA_GRAPHQL_ADMIN_SECRET: $HASURA_GRAPHQL_ADMIN_SECRET
+      HASURA_GRAPHQL_ENABLE_CONSOLE: "true" # set to "false" to disable console
+      HASURA_GRAPHQL_CORS_DOMAIN: "*"
+    depends_on:
+      - reverse_proxy
+      - core_database
+    # volumes:
+    #   - ./hasura/migrations:/hasura-migrations
+    restart: always
+
+volumes:
+  db-data: {}

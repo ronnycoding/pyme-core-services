@@ -1,0 +1,95 @@
+{
+  "name": "consumopymecr-webapp",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@apollo/react-hooks": "^3.1.3",
+    "@emotion/core": "^10.0.22",
+    "@material-ui/core": "^4.8.2",
+    "@material-ui/icons": "^4.5.1",
+    "@theme-ui/components": "^0.2.50",
+    "apollo-cache-inmemory": "^1.6.5",
+    "apollo-client": "^2.6.8",
+    "apollo-link": "^1.2.13",
+    "apollo-link-context": "^1.0.19",
+    "apollo-link-error": "^1.1.12",
+    "apollo-link-http": "^1.5.16",
+    "apollo-link-rest": "^0.8.0-beta.0",
+    "apollo-link-retry": "^2.2.15",
+    "axios": "^0.19.2",
+    "clsx": "^1.0.4",
+    "formik": "^2.1.4",
+    "framer-motion": "^1.7.0",
+    "graphql": "^14.6.0",
+    "graphql-anywhere": "^4.2.6",
+    "graphql-tag": "^2.10.1",
+    "lint-staged": "^9.5.0",
+    "moment": "^2.24.0",
+    "qs": "^6.9.2",
+    "react": "^16.12.0",
+    "react-code-input": "^3.8.1",
+    "react-dom": "^16.12.0",
+    "react-error-boundary": "^1.2.5",
+    "react-phone-input-2": "^2.11.0",
+    "react-router-dom": "^5.1.2",
+    "react-scripts": "3.4.0",
+    "styled-components": "^5.0.1"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "lint": "eslint --ignore-path .gitignore '**/*.+(js|ts|tsx)'",
+    "check-types": "tsc",
+    "prettier": "prettier --ignore-path .gitignore --write '**/*.+(js|json|ts|tsx)'",
+    "format": "yarn prettier --write",
+    "check-format": "yarn prettier --list-different",
+    "validate": "yarn check-types && yarn check-format && yarn lint && yarn build"
+  },
+  "lint-staged": {
+    "*.js": [
+      "prettier --write",
+      "eslint --fix",
+      "git add"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@airbnb/config-prettier": "^2.1.0",
+    "@blockmatic/prettier-config": "^1.2.2",
+    "@blockmatic/tsconfig": "^1.4.2",
+    "@kevinwolf/eslint-config": "0.2.4",
+    "@types/jest": "24.0.23",
+    "@types/node": "12.12.17",
+    "@types/react": "16.9.16",
+    "@types/react-dom": "16.9.4",
+    "@types/react-router-dom": "^5.1.3",
+    "@types/theme-ui": "^0.2.6",
+    "@types/theme-ui__components": "^0.2.0",
+    "@types/yup": "^0.26.27",
+    "eslint": "^6.7.2",
+    "eslint-config-airbnb": "^18.0.1",
+    "eslint-plugin-jest": "^23.1.1",
+    "eslint-plugin-react-hooks": "^2.3.0",
+    "husky": "^3.1.0",
+    "prettier": "^1.19.1",
+    "typescript": "3.7.3"
+  }
+}
