@@ -11,11 +11,60 @@ from .models import UserCard
 class UserCardObjectType(DjangoObjectType):
     class Meta:
         model = UserCard
-        fields = ('last_four_digits', 'payment_method_id', 'brand',)
+        fields = ('last_four_digits', 'brand', 'id')
+
+class DeleteCard(graphene.Mutation):
+    user_card = graphene.Field(UserCardObjectType)
+    ok = graphene.Boolean(default_value=False)
+
+    class Arguments:
+        card_id = graphene.Int(required=True)
+
+    def mutate(self, info, card_id):
+        """
+        :param info:
+        :param card_id:
+        :return:
+        """
+
+        """
+            verify user authentication    
+        """
+        email = get_user_email_by_auth_token_header(headers=info.context)
+
+        """
+            initialize stripe client
+        """
+        stripe = get_client()
+
+        """
+            get user
+        """
+        user = CustomUser.objects.filter(email=email).first()
+
+        """
+            find user paymethod
+        """
+        card = user.usercard_set.filter(id=card_id).first()
+
+        """
+            detach paymethod of user
+        """
+        stripe.PaymentMethod.detach(card.payment_method_id)
+
+        """
+            get card by card_id and delete card
+        """
+        card.delete()
+
+        return DeleteCard(user_card=card, ok=True)
+
+
 
 
 class CreateCard(graphene.Mutation):
     user_card = graphene.Field(UserCardObjectType)
+    ok = graphene.Boolean(default_value=False)
 
     class Arguments:
         number = graphene.String(required=True)
@@ -83,3 +132,5 @@ class CreateCard(graphene.Mutation):
             user_card.payment_method_id,
             customer=user.stripe_customer.customer_id,
         )
+
+        return CreateCard(user_card=user_card, ok=True)

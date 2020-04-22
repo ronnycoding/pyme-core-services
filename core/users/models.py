@@ -1,4 +1,5 @@
 from django.db import models
+from safedelete.models import SafeDeleteModel, SOFT_DELETE_CASCADE
 from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
 from django.utils.translation import gettext_lazy as _
@@ -8,7 +9,8 @@ from stripe_customers.models import StripeCustomer
 from .managers import CustomUserManager
 
 
-class CustomUser(AbstractBaseUser, PermissionsMixin):
+class CustomUser(AbstractBaseUser, PermissionsMixin, SafeDeleteModel):
+    _safedelete_policy = SOFT_DELETE_CASCADE
     class UserType(models.TextChoices):
         DELIVERYMAN = 'DM', _('Delivery Man')
         CUSTOMER = 'CU', _('Customer')

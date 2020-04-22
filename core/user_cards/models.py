@@ -1,9 +1,11 @@
 from django.db import models
+from safedelete.models import SafeDeleteModel, SOFT_DELETE_CASCADE
 from fernet_fields import EncryptedTextField
 
 from users.models import CustomUser
 
-class UserCard(models.Model):
+class UserCard(SafeDeleteModel):
+    _safedelete_policy = SOFT_DELETE_CASCADE
     number = EncryptedTextField()
     exp_month = models.CharField(max_length=2)
     exp_year = models.CharField(max_length=4)
