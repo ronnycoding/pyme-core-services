@@ -23,6 +23,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin, SafeDeleteModel):
     last_name = models.CharField(max_length=128, null=True)
     username = models.CharField(max_length=128, null=True)
     is_staff = models.BooleanField(default=False)
+    update_at = models.DateTimeField(null=True)
     user_type = models.CharField(
         max_length=2,
         choices=UserType.choices,

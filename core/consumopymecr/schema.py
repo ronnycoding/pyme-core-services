@@ -5,12 +5,14 @@ from users.schema import CreateUser, User
 from users.models import CustomUser
 from users.helpers import get_user_email_by_auth_token_header
 from user_cards.schema import UserCardObjectType, CreateCard, DeleteCard
+from user_charges.schema import CreateCharge
 
 
 class Mutation(graphene.ObjectType):
     create_user = CreateUser.Field()
     create_card = CreateCard.Field()
     delete_card = DeleteCard.Field()
+    create_charge = CreateCharge.Field()
 
 
 class Query(graphene.ObjectType):

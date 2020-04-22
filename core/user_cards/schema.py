@@ -3,7 +3,6 @@ from graphene_django import DjangoObjectType
 from django.http import HttpResponse
 
 from consumopymecr.stripe_api.client import get_client
-
 from users.models import CustomUser
 from users.helpers import get_user_email_by_auth_token_header
 from .models import UserCard
