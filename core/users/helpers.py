@@ -1,7 +1,7 @@
 from graphql_jwt.utils import jwt_payload
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
-from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework_simplejwt.authentication import JWTAuthentication, JWTTokenUserAuthentication
 from rest_framework.decorators import api_view
 from django.http import JsonResponse
 
@@ -63,3 +63,9 @@ def get_user_email_by_auth_token_header(headers):
     validated_token = JWTAuthentication.get_validated_token(JWTAuthentication, raw_token=raw_token)
     user_email = JWTAuthentication.get_user(JWTAuthentication, validated_token=validated_token)
     return user_email
+
+def get_jwt_object(headers):
+    header = JWTAuthentication.get_header(JWTAuthentication, request=headers)
+    raw_token = JWTAuthentication.get_raw_token(JWTAuthentication, header=header)
+    validated_token = JWTAuthentication.get_validated_token(JWTAuthentication, raw_token=raw_token)
+    return JWTTokenUserAuthentication.get_user(JWTTokenUserAuthentication, validated_token=validated_token)

@@ -2,16 +2,108 @@ import graphene
 from graphene_django import DjangoObjectType
 
 from users.models import CustomUser
-from users.helpers import get_user_email_by_auth_token_header
+from users.helpers import get_user_email_by_auth_token_header, get_jwt_object
 from consumopymecr.stripe_api.client import get_client
 
 from .models import UserCharge
+
+class CancelReasonEnum(graphene.Enum):
+    DUPLICATE = 'duplicate'
+    FRAUDULENT = 'fraudulent'
+    REQUESTED_BY_CUSTOMER = 'requested_by_customer'
+    ABANDONED = 'abandoned'
 
 
 class UserChargeObjectType(DjangoObjectType):
     class Meta:
         model = UserCharge
         fields = ('id', 'currency', 'amount',)
+
+
+class CancelPaymentIntent(graphene.Mutation):
+    ok = graphene.Boolean(default_value=False)
+
+    class Arguments:
+        order_id = graphene.Int(required=True)
+        cancel_reason = graphene.String(required=True)
+
+    def mutate(self, info, order_id, cancel_reason):
+        """
+        :param info:
+        :param order_id:
+        :param cancel_reason:
+        :return:
+        """
+
+        """
+            verify user authentication    
+        """
+        user = get_jwt_object(headers=info.context)
+        customer = CustomUser.objects.get(pk=user.pk)
+        if customer.user_type != 'MA':
+            raise ValueError('Permission not authorized')
+
+
+        """
+            TODO: add validation options cancel_reason or look the way to implement enum graphene
+        """
+
+        """
+            get charge by order_id
+        """
+        user_charge = UserCharge.objects.get(order_id=order_id)
+
+        """
+            initialize stripe client
+        """
+        stripe = get_client()
+
+        stripe.PaymentIntent.cancel(
+            user_charge.payment_intent,
+            cancellation_reason=cancel_reason
+        )
+
+        return CancelPaymentIntent(ok=True)
+
+
+class ConfirmPaymentIntent(graphene.Mutation):
+    ok = graphene.Boolean(default_value=False)
+
+    class Arguments:
+        order_id = graphene.Int(required=True)
+
+    def mutate(self, info, order_id):
+        """
+        :param info:
+        :param order_id:
+        :return:
+        """
+
+        """
+            verify user authentication    
+        """
+        user = get_jwt_object(headers=info.context)
+        customer = CustomUser.objects.get(pk=user.pk)
+        if customer.user_type != 'MA':
+            raise ValueError('Permission not authorized')
+
+        """
+            get charge by order_id
+        """
+        user_charge = UserCharge.objects.get(order_id=order_id)
+
+        """
+            initialize stripe client
+        """
+        stripe = get_client()
+
+        stripe.PaymentIntent.confirm(
+            user_charge.payment_intent,
+            payment_method=user_charge.user_card.payment_method_id,
+        )
+
+        return ConfirmPaymentIntent(ok=True)
+
 
 
 class CreateCharge(graphene.Mutation):

@@ -14,7 +14,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin, SafeDeleteModel):
     class UserType(models.TextChoices):
         DELIVERYMAN = 'DM', _('Delivery Man')
         CUSTOMER = 'CU', _('Customer')
-        STORE_OWNER = 'SO', _('Store Owner')
+        STORE_OWNER = 'SO', _('Store Owner'),
+        MANAGER = 'MA', _('System Manager')
 
     email = models.EmailField(_('email address'), unique=True)
     is_active = models.BooleanField(default=True)

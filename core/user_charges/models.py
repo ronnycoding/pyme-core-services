@@ -17,4 +17,4 @@ class UserCharge(SafeDeleteModel):
     payment_intent = models.CharField(max_length=128, null=True)
     status = models.CharField(max_length=48, null=True)
     currency = models.CharField(max_length=3, null=True)
-    ## order_id connected with hasura
+    order_id = models.IntegerField()

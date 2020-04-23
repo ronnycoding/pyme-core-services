@@ -5,7 +5,7 @@ from users.schema import CreateUser, User
 from users.models import CustomUser
 from users.helpers import get_user_email_by_auth_token_header
 from user_cards.schema import UserCardObjectType, CreateCard, DeleteCard
-from user_charges.schema import CreateCharge
+from user_charges.schema import CreateCharge, ConfirmPaymentIntent, CancelPaymentIntent
 
 
 class Mutation(graphene.ObjectType):
@@ -13,6 +13,8 @@ class Mutation(graphene.ObjectType):
     create_card = CreateCard.Field()
     delete_card = DeleteCard.Field()
     create_charge = CreateCharge.Field()
+    confirm_payment = ConfirmPaymentIntent.Field()
+    cancel_payment = CancelPaymentIntent.Field()
 
 
 class Query(graphene.ObjectType):
